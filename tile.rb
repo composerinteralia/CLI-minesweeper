@@ -1,19 +1,28 @@
+require 'byebug'
+
 class Tile
   OFFSETS = [-1,0,1].product([-1,0,1]).reject { |pos| pos == [0,0] }
 
   attr_reader :type, :board, :revealed, :flagged, :pos
 
-  def initialize(type, pos, board = nil)
-    @type = type
+  def initialize(pos, board = nil)
+    @type = :clear
     @pos = pos
     @board = board
     @revealed = false
     @flagged = false
   end
 
+  def place_bomb
+    @type = :bomb
+  end
+
+  def clear?
+    type == :clear
+  end
+
   def reveal
     @revealed = true
-    type
     @neighbors ||= neighbors
   end
 
@@ -25,7 +34,7 @@ class Tile
     end
 
     valid_pos = neighbors_pos.select do |neighbor|
-      neighbor.all? { |idx| idx.between?(0, 8) }
+      neighbor.all? { |idx| idx.between?(0, board.size - 1) }
     end
 
     valid_pos.map { |pos| board[pos] }
@@ -52,8 +61,10 @@ class Tile
   end
 
   def to_s
-    if revealed?
+    if bombed?
       "*"
+    elsif revealed?
+      "_"
     elsif flagged?
       "F"
     else
