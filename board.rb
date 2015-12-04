@@ -57,7 +57,9 @@ end
 
 if __FILE__ == $PROGRAM_NAME
   board = Board.new
+  board.render
+  board[[4,4]].reveal
+  board.render
   board.reveal_all
   board.render
-  board[0,0].neighbor_bomb_count
 end

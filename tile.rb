@@ -3,7 +3,7 @@ require 'byebug'
 class Tile
   OFFSETS = [-1,0,1].product([-1,0,1]).reject { |pos| pos == [0,0] }
 
-  attr_reader :type, :board, :revealed, :flagged, :pos
+  attr_reader :type, :board, :revealed, :flagged, :pos, :neighbors
 
   def initialize(pos, board = nil)
     @type = :clear
@@ -23,10 +23,14 @@ class Tile
 
   def reveal
     @revealed = true
-    @neighbors ||= neighbors
+    @neighbors ||= get_neighbors
+
+    if neighbor_bomb_count.zero?
+      neighbors.each { |neighbor| neighbor.reveal unless neighbor.revealed? }
+    end
   end
 
-  def neighbors
+  def get_neighbors
     possible_positions = get_neighbor_positions
     valid_pos = get_valid_positions(possible_positions)
 
