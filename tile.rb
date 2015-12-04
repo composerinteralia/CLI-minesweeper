@@ -1,7 +1,7 @@
 class Tile
-  attr_reader :type, :board
+  attr_reader :type, :board, :revealed
 
-  def initialize(type, board)
+  def initialize(type, board = nil)
     @type = type
     @board = board
     @revealed = false
@@ -10,6 +10,10 @@ class Tile
   def reveal
     @revealed = true
     type
+  end
+
+  def bombed?
+    type == :bomb && revealed
   end
 
 end
