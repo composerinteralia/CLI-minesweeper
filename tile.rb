@@ -25,4 +25,8 @@ class Tile
     type == :bomb && revealed
   end
 
+  def revealed?
+    revealed
+  end
+
 end
