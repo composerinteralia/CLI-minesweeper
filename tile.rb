@@ -41,6 +41,7 @@ class Tile
 
   def final_reveal
     @revealed = true
+    @neighbors ||= get_neighbors
   end
 
   def get_neighbors
@@ -76,8 +77,10 @@ class Tile
   def to_s
     if bombed?
       "*"
-    elsif revealed?
+    elsif revealed? && neighbor_bomb_count.zero?
       "_"
+    elsif revealed? && neighbor_bomb_count > 0
+      "#{neighbor_bomb_count}"
     elsif flagged?
       "F"
     else

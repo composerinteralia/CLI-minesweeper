@@ -28,6 +28,10 @@ class Board
     end
   end
 
+  def make_move(move)
+    self[move].reveal
+  end
+
   def render
     puts "   #{(0...size).to_a.join(" ")}"
 
@@ -45,6 +49,10 @@ class Board
         tile.final_reveal
       end
     end
+  end
+
+  def won?
+    grid.flatten.all? { |tile| tile.revealed? || tile.bomb? }
   end
 
   def [](pos)
