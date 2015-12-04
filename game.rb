@@ -11,9 +11,9 @@ class Game
   def run
     until over?
       board.render
-      move = get_turn
+      position, move_type = get_turn
       begin
-        board.make_move(move)
+        board.make_move(position, move_type)
       rescue Explosion
         board.reveal_all
         board.render
@@ -26,14 +26,17 @@ class Game
   end
 
   def get_turn
+    print "Reveal (r) or Flag (f)?"
+    answer = gets.chomp.downcase[0]
+
     print "Enter row: "
     row = gets.chomp.to_i
     print "Enter col: "
     col = gets.chomp.to_i
 
-    move = [row, col]
+    move = [[row, col], answer]
 
-    until move.all? { |coord| coord.between?(0, board.size - 1) }
+    until move[0].all? { |coord| coord.between?(0, board.size - 1) }
       puts "Invalid move, try again."
       move = get_turn
     end

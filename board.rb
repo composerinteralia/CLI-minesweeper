@@ -28,8 +28,14 @@ class Board
     end
   end
 
-  def make_move(move)
-    self[move].reveal
+  def make_move(position, move_type)
+    if move_type == "f"
+      self[position].flag
+    elsif move_type == "r"
+      self[position].reveal
+    else
+      puts "Incorrect move type (type 'r' or 'f')"
+    end
   end
 
   def render
