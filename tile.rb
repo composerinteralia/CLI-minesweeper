@@ -33,4 +33,13 @@ class Tile
     type
   end
 
+  def to_s
+    if revealed?
+      "*"
+    elsif flagged?
+      "F"
+    else
+      "O"
+    end
+  end
 end

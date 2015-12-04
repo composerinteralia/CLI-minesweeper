@@ -12,4 +12,15 @@ class Board
     end
   end
 
+  def render
+    puts "   #{(0...grid.size).to_a.join(" ")}"
+
+    grid.each_with_index do |row, idx|
+      print "#{idx}: "
+      puts row.map(&:to_s).join(" ")
+    end
+
+    nil
+  end
+
 end
