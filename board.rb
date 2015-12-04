@@ -7,8 +7,8 @@ class Board
   end
 
   def populate
-    grid.map! do |row|
-      row.map! { |tile| Tile.new(:bomb) }
+    grid.map!.with_index do |row, row_i|
+      row.map!.with_index { |tile, col_i| Tile.new(:bomb, [row_i, col_i], self) }
     end
   end
 
@@ -23,4 +23,8 @@ class Board
     nil
   end
 
+  def [](pos)
+    row, col = pos
+    grid[row][col]
+  end
 end
