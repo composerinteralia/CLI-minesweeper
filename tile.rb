@@ -17,6 +17,10 @@ class Tile
     @flagged = !flagged
   end
 
+  def flagged?
+    flagged
+  end
+
   def bombed?
     type == :bomb && revealed
   end
