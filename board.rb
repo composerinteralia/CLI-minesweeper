@@ -5,15 +5,14 @@ class Board
 
   def initialize(size = 9)
     @size = size
-    @grid = Array.new(size) { Array.new(size) }
+    @grid = generate_grid(size)
 
-    populate
     place_bombs(10)
   end
 
-  def populate
-    grid.map!.with_index do |row, row_i|
-      row.map!.with_index { |tile, col_i| Tile.new([row_i, col_i], self) }
+  def generate_grid(size)
+    (0...size).map do |row_i|
+      (0...size).map { |col_i| Tile.new([row_i, col_i], self) }
     end
   end
 
