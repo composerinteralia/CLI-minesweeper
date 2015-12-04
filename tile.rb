@@ -1,5 +1,8 @@
 require 'byebug'
 
+class Explosion < StandardError
+end
+
 class Tile
   OFFSETS = [-1,0,1].product([-1,0,1]).reject { |pos| pos == [0,0] }
 
@@ -21,24 +24,29 @@ class Tile
     type == :clear
   end
 
+  def bomb?
+    type == :bomb
+  end
+
   def reveal
+    raise Explosion, "You lose!" if bomb?
+
     @revealed = true
     @neighbors ||= get_neighbors
-
+    # byebug
     if neighbor_bomb_count.zero?
-      neighbors.each { |neighbor| neighbor.reveal unless neighbor.revealed? }
+      neighbors.each { |neighbor| neighbor.reveal unless neighbor.revealed? || neighbor.bomb? }
     end
   end
 
   def get_neighbors
     possible_positions = get_neighbor_positions
     valid_pos = get_valid_positions(possible_positions)
-
     valid_pos.map { |pos| board[pos] }
   end
 
   def neighbor_bomb_count
-    neighbors.count { |neighbor| neighbor.type == :bomb}
+    neighbors.count { |neighbor| neighbor.bomb? }
   end
 
   def flag
@@ -50,7 +58,7 @@ class Tile
   end
 
   def bombed?
-    type == :bomb && revealed
+    bomb? && revealed?
   end
 
   def revealed?

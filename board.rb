@@ -41,14 +41,6 @@ class Board
     nil
   end
 
-  def reveal_all
-    grid.each do |row|
-      row.each do |tile|
-        tile.reveal
-      end
-    end
-  end
-
   def [](pos)
     row, col = pos
     grid[row][col]
@@ -59,7 +51,5 @@ if __FILE__ == $PROGRAM_NAME
   board = Board.new
   board.render
   board[[4,4]].reveal
-  board.render
-  board.reveal_all
   board.render
 end
