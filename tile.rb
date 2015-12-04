@@ -33,6 +33,10 @@ class Tile
     valid_pos.map { |pos| board[pos] }
   end
 
+  def neighbor_bomb_count
+    neighbors.count { |neighbor| neighbor.type == :bomb}
+  end
+
   def flag
     @flagged = !flagged
   end
