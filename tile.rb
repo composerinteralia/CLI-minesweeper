@@ -39,6 +39,10 @@ class Tile
     end
   end
 
+  def final_reveal
+    @revealed = true
+  end
+
   def get_neighbors
     possible_positions = get_neighbor_positions
     valid_pos = get_valid_positions(possible_positions)
