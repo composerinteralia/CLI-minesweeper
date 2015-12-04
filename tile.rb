@@ -27,15 +27,8 @@ class Tile
   end
 
   def neighbors
-    neighbors_pos = OFFSETS.map do |offset_row, offset_col|
-      neighbor_row = offset_row + pos[0]
-      neighbor_col = offset_col + pos[1]
-      [neighbor_row, neighbor_col]
-    end
-
-    valid_pos = neighbors_pos.select do |neighbor|
-      neighbor.all? { |idx| idx.between?(0, board.size - 1) }
-    end
+    possible_positions = get_neighbor_positions
+    valid_pos = get_valid_positions(possible_positions)
 
     valid_pos.map { |pos| board[pos] }
   end
@@ -69,6 +62,21 @@ class Tile
       "F"
     else
       "O"
+    end
+  end
+
+  private
+  def get_neighbor_positions
+    OFFSETS.map do |offset_row, offset_col|
+      neighbor_row = offset_row + pos[0]
+      neighbor_col = offset_col + pos[1]
+      [neighbor_row, neighbor_col]
+    end
+  end
+
+  def get_valid_positions(possible_positions)
+    possible_positions.select do |neighbor|
+      neighbor.all? { |idx| idx.between?(0, board.size - 1) }
     end
   end
 end
