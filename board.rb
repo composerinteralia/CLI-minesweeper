@@ -11,4 +11,5 @@ class Board
       row.map! { |tile| Tile.new(:bomb) }
     end
   end
+
 end

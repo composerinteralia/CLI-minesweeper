@@ -29,4 +29,8 @@ class Tile
     revealed
   end
 
+  def inspect
+    type
+  end
+
 end
