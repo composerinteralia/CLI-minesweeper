@@ -13,10 +13,13 @@ class Game
 
   def run
     first_turn = true
+
     until over?
       board.render
-      position, move_type = get_turn
+
+      position, move_type = get_move
       begin
+        start_time = Time.now if first_turn
         board.make_move(position, move_type)
         first_turn = false
       rescue Explosion
@@ -24,38 +27,42 @@ class Game
           @board = Board.new
           retry
         end
-        board.reveal_all
-        board.render
+
+        board.losing_render
         return puts "You lose!"
       end
     end
 
-    board.reveal_unflagged_bombs
-    board.render
-    puts "Congratulations! You won!"
+    play_time = (Time.now - start_time).round
+    board.winning_render
+    puts "Congratulations! You won in #{play_time} seconds!"
   end
 
-  def get_turn
+  def get_move
     print "Reveal (r) or Flag (f)?"
     move_type = gets.chomp.downcase[0]
 
     print "Enter row: "
-    row = gets.chomp.to_i
+    row = get_i
     print "Enter col: "
     col = gets.chomp.to_i
 
     position = [row, col]
-
     move = [position, move_type]
-    until valid_move? position
-      puts "Invalid move, try again."
-      move = get_turn
+    until in_bound? position
+      puts "Not on the grid, try again."
+      move = get_move
+      position = move[0]
     end
 
     move
   end
 
-  def valid_move?(position)
+  def get_i
+    gets.chomp.to_i
+  end
+
+  def in_bound?(position)
     position.all? { |coord| coord.between?(0, board.size - 1) }
   end
 

@@ -55,6 +55,16 @@ class Board
 
   end
 
+  def losing_render
+    reveal_all
+    render
+  end
+
+  def winning_render
+    reveal_unflagged_bombs
+    render
+  end
+
   def reveal_all
     grid_each { |tile| tile.final_reveal }
   end
@@ -70,7 +80,6 @@ class Board
       end
     end
   end
-
 
   def won?
     grid.flatten.all? { |tile| tile.revealed? || tile.bomb? }
