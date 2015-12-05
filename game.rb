@@ -22,14 +22,14 @@ class Game
         start_time = Time.now if first_turn
         board.make_move(position, move_type)
         first_turn = false
-      rescue Explosion
+      rescue Explosion => alert
         if first_turn
-          @board = Board.new
+          @board = Board.new #bug
           retry
         end
 
         board.losing_render
-        return puts "You lose!"
+        return puts alert
       end
     end
 
@@ -45,7 +45,7 @@ class Game
     print "Enter row: "
     row = get_i
     print "Enter col: "
-    col = gets.chomp.to_i
+    col = get_i
 
     position = [row, col]
     move = [position, move_type]
@@ -59,7 +59,7 @@ class Game
   end
 
   def get_i
-    gets.chomp.to_i
+    gets.chomp.to_i(36)
   end
 
   def in_bound?(position)

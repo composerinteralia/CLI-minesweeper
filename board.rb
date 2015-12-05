@@ -1,10 +1,10 @@
 class Board
   attr_reader :grid, :size, :num_bombs
 
-  def initialize
-    @size = 9
+  def initialize(size = 9, num_bombs = 10)
+    @size = size
     @grid = generate_grid(size)
-    @num_bombs = 10
+    @num_bombs = num_bombs
     place_bombs(num_bombs)
   end
 
@@ -43,16 +43,17 @@ class Board
   def render
     system "clear"
 
-    puts "#{remaining_bombs} bombs remaining\n\n"
-
-    puts "    #{(0...size).to_a.join(" ")}"
-
-    grid.each_with_index do |row, idx|
-      print "#{"#{idx}:".ljust(3)} "
-      puts row.map(&:to_s).join(" ")
-    end
+    puts "#{remaining_bombs} bombs remaining"
     puts
 
+    row_indices = (0...size).map { |n| n.to_s(36) }.join " "
+    puts "  #{row_indices}"
+
+    grid.each_with_index do |row, idx|
+      print "#{idx.to_s(36)} "
+      puts row.map(&:to_s).join " "
+    end
+    puts
   end
 
   def losing_render
