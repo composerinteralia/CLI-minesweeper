@@ -4,11 +4,27 @@ require 'colorize'
 require './tile'
 require './board'
 
+class BombOverflow < StandardError
+end
+
+
 class Game
+  def self.from_custom_board(size, num_bombs)
+    num_bombs ||= 0
+
+    if num_bombs > size ** 2
+      raise BombOverflow, "More bombs than grid positions"
+    end
+
+    board = Board.new(size, num_bombs)
+    self.new(board)
+  end
+
   attr_reader :board
 
-  def initialize
-    @board = Board.new
+  def initialize(board = nil)
+    board ||= Board.new
+    @board = board
   end
 
   def run
@@ -24,7 +40,7 @@ class Game
         first_turn = false
       rescue Explosion => alert
         if first_turn
-          @board = Board.new #bug
+          @board = Board.new(board.size, board.num_bombs)
           retry
         end
 
@@ -40,7 +56,7 @@ class Game
 
   def get_move
     print "Reveal (r) or Flag (f)?"
-    move_type = gets.chomp.downcase[0]
+    move_type = STDIN.gets.chomp.downcase[0]
 
     print "Enter row: "
     row = get_i
@@ -59,7 +75,7 @@ class Game
   end
 
   def get_i
-    gets.chomp.to_i(36)
+    STDIN.gets.chomp.to_i(36)
   end
 
   def in_bound?(position)
@@ -72,5 +88,12 @@ class Game
 end
 
 if __FILE__ == $PROGRAM_NAME
-  Game.new.run
+  if ARGV.empty?
+    game = Game.new
+  else
+    board_size, num_bombs = ARGV.shift(2).map(&:to_i)
+    game = Game.from_custom_board(board_size, num_bombs)
+  end
+
+  game.run
 end

@@ -27,6 +27,7 @@ class Tile
   end
 
   def reveal
+    return if flagged?
     raise Explosion, "You lose!" if bomb?
 
     @revealed = true
