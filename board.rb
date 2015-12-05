@@ -68,12 +68,3 @@ class Board
     grid[row][col]
   end
 end
-
-if __FILE__ == $PROGRAM_NAME
-  board = Board.new
-  board.render
-  board[[4,4]].reveal
-  board.render
-  board.reveal_all
-  board.render
-end

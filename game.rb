@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require './tile'
 require './board'
 
@@ -49,4 +51,6 @@ class Game
   end
 end
 
-Game.new.run
+if __FILE__ == $PROGRAM_NAME
+  Game.new.run
+end
