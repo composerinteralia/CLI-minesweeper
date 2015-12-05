@@ -7,23 +7,30 @@ require './board'
 class Game
   attr_reader :board
 
-  def initialize(board = nil)
-    @board ||= Board.new
+  def initialize
+    @board = Board.new
   end
 
   def run
+    first_turn = true
     until over?
       board.render
       position, move_type = get_turn
       begin
         board.make_move(position, move_type)
+        first_turn = false
       rescue Explosion
+        if first_turn
+          @board = Board.new
+          retry
+        end
         board.reveal_all
         board.render
         return puts "You lose!"
       end
     end
 
+    board.render
     puts "Congratulations! You won!"
   end
 
