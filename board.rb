@@ -47,10 +47,10 @@ class Board
   end
 
   def make_move(position, move_type)
-    if move_type == "f"
+    if move_type == :f
       return if self[position].revealed?
       self[position].flag
-    elsif move_type == "r"
+    elsif move_type == :r
       self[position].reveal
     end
   end
