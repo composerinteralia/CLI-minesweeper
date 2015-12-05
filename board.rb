@@ -1,7 +1,25 @@
+class BoardSizeError < StandardError
+end
+
+class BombOverflow < StandardError
+end
+
 class Board
   attr_reader :grid, :size, :num_bombs
 
   def initialize(size = 9, num_bombs = 10)
+    unless size.between?(2, 36)
+      raise BoardSizeError, "Board size must be between 2 and 36."
+    end
+
+    max_num_bombs = size ** 2 - 2
+    if num_bombs > max_num_bombs
+      raise BombOverflow,
+        "Too many bombs (#{num_bombs}) for board size (#{size}). "\
+        "Allow at least two clear positions "\
+        "(i.e. #{max_num_bombs} bombs or fewer)."
+    end
+
     @size = size
     @grid = generate_grid(size)
     @num_bombs = num_bombs
@@ -34,9 +52,6 @@ class Board
       self[position].flag
     elsif move_type == "r"
       self[position].reveal
-    else
-      puts "Incorrect move type (type 'r' or 'f')"
-      sleep 1
     end
   end
 
