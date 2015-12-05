@@ -12,8 +12,11 @@ class Game
   def self.from_custom_board(size, num_bombs)
     num_bombs ||= 0
 
-    if num_bombs > size ** 2
-      raise BombOverflow, "More bombs than grid positions"
+    max_num_bombs = size ** 2 - 2
+    if num_bombs > max_num_bombs
+      raise BombOverflow,
+        "Too many bombs (#{num_bombs}) for board size (#{size}). "\
+        "Allow at least two clear positions (#{max_num_bombs} bombs or fewer)."
     end
 
     board = Board.new(size, num_bombs)
