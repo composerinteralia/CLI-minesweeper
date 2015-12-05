@@ -35,14 +35,16 @@ class Board
       self[position].reveal
     else
       puts "Incorrect move type (type 'r' or 'f')"
+      sleep 1
     end
   end
 
   def render
-    puts "   #{(0...size).to_a.join(" ")}"
+    system "clear"
+    puts "    #{(0...size).to_a.join(" ")}"
 
     grid.each_with_index do |row, idx|
-      print "#{idx}: "
+      print "#{"#{idx}:".ljust(3)} "
       puts row.map(&:to_s).join(" ")
     end
 

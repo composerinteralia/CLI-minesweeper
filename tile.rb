@@ -1,4 +1,4 @@
-require 'byebug'
+require 'colorize'
 
 class Explosion < StandardError
 end
@@ -33,7 +33,7 @@ class Tile
 
     @revealed = true
     @neighbors ||= get_neighbors
-    # byebug
+
     if neighbor_bomb_count.zero?
       neighbors.each { |neighbor| neighbor.reveal unless neighbor.revealed? || neighbor.bomb? }
     end
@@ -78,14 +78,30 @@ class Tile
     if bombed?
       "*"
     elsif revealed? && neighbor_bomb_count.zero?
-      "_"
+      " "
     elsif revealed? && neighbor_bomb_count > 0
-      "#{neighbor_bomb_count}"
+      color neighbor_bomb_count
     elsif flagged?
-      "F"
+      "F".colorize(:red)
     else
-      "O"
+      "O".colorize(:white)
     end
+  end
+
+  COLORS = {
+    1 => :light_blue,
+    2 => :green,
+    3 => :light_red,
+    4 => :blue,
+    5 => :magenta,
+    6 => :light_green,
+    7 => :grey,
+    8 => :light_black
+  }
+
+  def color(num_bombs)
+    color = COLORS[num_bombs]
+    num_bombs.to_s.colorize(color)
   end
 
   private
