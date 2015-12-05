@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'colorize'
 require './tile'
 require './board'
 

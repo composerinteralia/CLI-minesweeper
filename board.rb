@@ -42,7 +42,9 @@ class Board
 
   def render
     system "clear"
+
     puts "#{remaining_bombs} bombs remaining\n\n"
+
     puts "    #{(0...size).to_a.join(" ")}"
 
     grid.each_with_index do |row, idx|
@@ -67,7 +69,8 @@ class Board
 
   def remaining_bombs
     flagged_bombs = grid.flatten.count { |tile| tile.flagged? }
-    num_bombs - flagged_bombs
+    bombs = num_bombs - flagged_bombs
+    bombs < 0 ? bombs.to_s.red : bombs.to_s.green
   end
 
   def [](pos)

@@ -1,5 +1,3 @@
-require 'colorize'
-
 class Explosion < StandardError
 end
 
@@ -84,13 +82,13 @@ class Tile
 
   def to_s
     res = if bombed?
-      "*"
+      "\u2055".red
     elsif revealed? && neighbor_bomb_count.zero?
       " "
     elsif revealed? && neighbor_bomb_count > 0
       color neighbor_bomb_count
     elsif flagged?
-      "/".black.on_red
+      "\u2691".red
     else
       "O".white
     end
