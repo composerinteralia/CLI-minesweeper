@@ -30,6 +30,7 @@ class Game
       end
     end
 
+    board.reveal_unflagged_bombs
     board.render
     puts "Congratulations! You won!"
   end

@@ -56,12 +56,21 @@ class Board
   end
 
   def reveal_all
+    grid_each { |tile| tile.final_reveal }
+  end
+
+  def reveal_unflagged_bombs
+    grid_each { |tile| tile.final_reveal unless tile.flagged? }
+  end
+
+  def grid_each
     grid.each do |row|
       row.each do |tile|
-        tile.final_reveal
+        yield tile
       end
     end
   end
+
 
   def won?
     grid.flatten.all? { |tile| tile.revealed? || tile.bomb? }
