@@ -1,11 +1,11 @@
 class Board
-  attr_reader :grid, :size
+  attr_reader :grid, :size, :num_bombs
 
-  def initialize(size = 9)
-    @size = size
+  def initialize
+    @size = 9
     @grid = generate_grid(size)
-
-    place_bombs(10)
+    @num_bombs = 10
+    place_bombs(num_bombs)
   end
 
   def generate_grid(size)
@@ -30,6 +30,7 @@ class Board
 
   def make_move(position, move_type)
     if move_type == "f"
+      return if self[position].revealed?
       self[position].flag
     elsif move_type == "r"
       self[position].reveal
@@ -41,14 +42,15 @@ class Board
 
   def render
     system "clear"
+    puts "#{remaining_bombs} bombs remaining\n\n"
     puts "    #{(0...size).to_a.join(" ")}"
 
     grid.each_with_index do |row, idx|
       print "#{"#{idx}:".ljust(3)} "
       puts row.map(&:to_s).join(" ")
     end
+    puts
 
-    nil
   end
 
   def reveal_all
@@ -61,6 +63,11 @@ class Board
 
   def won?
     grid.flatten.all? { |tile| tile.revealed? || tile.bomb? }
+  end
+
+  def remaining_bombs
+    flagged_bombs = grid.flatten.count { |tile| tile.flagged? }
+    num_bombs - flagged_bombs
   end
 
   def [](pos)

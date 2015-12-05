@@ -19,8 +19,7 @@ class Game
       rescue Explosion
         board.reveal_all
         board.render
-        puts "You lose!"
-        return
+        return puts "You lose!"
       end
     end
 
@@ -29,21 +28,26 @@ class Game
 
   def get_turn
     print "Reveal (r) or Flag (f)?"
-    answer = gets.chomp.downcase[0]
+    move_type = gets.chomp.downcase[0]
 
     print "Enter row: "
     row = gets.chomp.to_i
     print "Enter col: "
     col = gets.chomp.to_i
 
-    move = [[row, col], answer]
+    position = [row, col]
 
-    until move[0].all? { |coord| coord.between?(0, board.size - 1) }
+    move = [position, move_type]
+    until valid_move? position
       puts "Invalid move, try again."
       move = get_turn
     end
 
     move
+  end
+
+  def valid_move?(position)
+    position.all? { |coord| coord.between?(0, board.size - 1) }
   end
 
   def over?

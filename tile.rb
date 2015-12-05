@@ -32,15 +32,19 @@ class Tile
     raise Explosion, "You lose!" if bomb?
 
     @revealed = true
+    @flagged = false
     @neighbors ||= get_neighbors
 
-    if neighbor_bomb_count.zero?
-      neighbors.each { |neighbor| neighbor.reveal unless neighbor.revealed? || neighbor.bomb? }
+    if neighbor_bomb_count.zero? || neighbor_bomb_count == neighbor_flagged_count
+      neighbors.each do |neighbor|
+        neighbor.reveal unless neighbor.revealed? || neighbor.flagged?
+      end
     end
   end
 
   def final_reveal
     @revealed = true
+    @flagged = bomb?
     @neighbors ||= get_neighbors
   end
 
@@ -52,6 +56,10 @@ class Tile
 
   def neighbor_bomb_count
     neighbors.count { |neighbor| neighbor.bomb? }
+  end
+
+  def neighbor_flagged_count
+    neighbors.count { |neighbor| neighbor.flagged? }
   end
 
   def flag
@@ -75,16 +83,16 @@ class Tile
   end
 
   def to_s
-    if bombed?
+    res = if bombed?
       "*"
     elsif revealed? && neighbor_bomb_count.zero?
       " "
     elsif revealed? && neighbor_bomb_count > 0
       color neighbor_bomb_count
     elsif flagged?
-      "F".colorize(:red)
+      "/".black.on_red
     else
-      "O".colorize(:white)
+      "O".white
     end
   end
 
