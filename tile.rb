@@ -83,7 +83,7 @@ class Tile
 
   def to_s
     res = if bombed?
-      "\u2055".red
+      "\u2055".black
     elsif revealed? && neighbor_bomb_count.zero?
       " "
     elsif revealed? && neighbor_bomb_count > 0
@@ -106,9 +106,9 @@ class Tile
     8 => :light_black
   }
 
-  def color(num_bombs)
-    color = COLORS[num_bombs]
-    num_bombs.to_s.colorize(color)
+  def color(bomb_count)
+    color = COLORS[bomb_count]
+    bomb_count.to_s.colorize(color)
   end
 
   private

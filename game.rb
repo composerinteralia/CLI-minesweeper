@@ -7,9 +7,9 @@ require './board'
 class Game
   MOVE_TYPES = [:r, :f]
 
-  def self.from_custom_board(size, num_bombs)
-    num_bombs ||= 0
-    board = Board.new(size, num_bombs)
+  def self.from_custom_board(size, bomb_total)
+    bomb_total ||= 0
+    board = Board.new(size, bomb_total)
     self.new(board)
   end
 
@@ -27,12 +27,12 @@ class Game
       position, move_type = get_move
       begin
         start_time = Time.now if first_turn
-        board.make_move(position, move_type)
+        board.move(position, move_type)
         first_turn = false
 
       rescue Explosion => alert
         if first_turn
-          @board = Board.new(board.size, board.num_bombs)
+          @board = Board.new(board.size, board.bomb_total)
           retry
         end
 
@@ -55,11 +55,12 @@ class Game
   end
 
   def get_move
-    puts "Type 'r' (reveal) or 'f' (flag) followed by a row and column. (e.g. 'r 0 0')."
+    puts "Type 'r' (reveal) or 'f' (flag) followed by"\
+         "a row and column (e.g. 'r 0 0')."
     print ">"
 
     move = parse input
-    until validate move
+    until valid? move
       print ">"
       move = parse input
     end
@@ -79,7 +80,7 @@ class Game
     [position, move_type]
   end
 
-  def validate(move)
+  def valid?(move)
     if bad_parse? move
       print "Invalid input. "
     elsif !valid_flag? move[1]
@@ -112,8 +113,8 @@ if __FILE__ == $PROGRAM_NAME
   if ARGV.empty?
     game = Game.new
   else
-    board_size, num_bombs = ARGV.shift(2).map(&:to_i)
-    game = Game.from_custom_board(board_size, num_bombs)
+    board_size, bomb_total = ARGV.shift(2).map(&:to_i)
+    game = Game.from_custom_board(board_size, bomb_total)
   end
 
   game.run
