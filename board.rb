@@ -85,11 +85,11 @@ class Board
   end
 
   def reveal_all
-    tiles.each { |tile| tile.final_reveal }
+    tiles.each { |tile| tile.reveal_self }
   end
 
   def reveal_unflagged_bombs
-    tiles.each { |tile| tile.final_reveal unless tile.flagged? }
+    tiles.each { |tile| tile.reveal_self unless tile.flagged? }
   end
 
   def tiles

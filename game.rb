@@ -50,8 +50,12 @@ class Game
   private
   attr_reader :board
 
-  def over?
-    board.won?
+  def bad_parse?(move)
+    move.flatten.size != 3
+  end
+
+  def in_bounds?(position)
+    position.all? { |coord| coord.between? 0, board.size - 1 }
   end
 
   def get_move
@@ -60,7 +64,7 @@ class Game
     print ">"
 
     move = parse input
-    until valid? move
+    until valid_move? move
       print ">"
       move = parse input
     end
@@ -72,6 +76,10 @@ class Game
     STDIN.gets.chomp
   end
 
+  def over?
+    board.won?
+  end
+
   def parse(raw_input)
     chars = raw_input.each_char.reject { |char| [" ", ",", "-"].include? char }
 
@@ -80,7 +88,7 @@ class Game
     [position, move_type]
   end
 
-  def valid?(move)
+  def valid_move?(move)
     if bad_parse? move
       print "Invalid input. "
     elsif !valid_flag? move[1]
@@ -94,14 +102,6 @@ class Game
 
     puts "Try again."
     false
-  end
-
-  def bad_parse?(move)
-    move.flatten.size != 3
-  end
-
-  def in_bounds?(position)
-    position.all? { |coord| coord.between? 0, board.size - 1 }
   end
 
   def valid_flag?(flag)
