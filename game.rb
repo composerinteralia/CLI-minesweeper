@@ -30,14 +30,14 @@ class Game
         board.move(position, move_type)
         first_turn = false
 
-      rescue Explosion => alert
+      rescue Explosion => losing_pos
         if first_turn
           @board = Board.new(board.size, board.bomb_total)
           retry
         end
 
         board.losing_render
-        return puts alert
+        return puts "#{losing_pos} exploded! You lose!"
       end
     end
 

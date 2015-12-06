@@ -9,11 +9,9 @@ class Board
 
   def initialize(size = 9, bomb_total = 10)
     validate size, bomb_total
-    @size = size
-    @bomb_total = bomb_total
+    @size, @bomb_total= size, bomb_total
 
-    @grid = generate_grid size
-    place_bombs bomb_total
+    generate_grid
   end
 
   def [](pos)
@@ -29,7 +27,7 @@ class Board
   def move(position, move_type)
     tile = self[position]
 
-    tile.flag if move_type == :f && !tile.revealed?
+    tile.toggle_flag if move_type == :f
     tile.reveal if move_type == :r
   end
 
@@ -60,21 +58,21 @@ class Board
   private
   attr_reader :grid
 
-  def generate_grid(size)
-    indices = (0...size)
-    indices.map do |row_i|
-      indices.map { |col_i| Tile.new [row_i, col_i], self }
+  def generate_grid
+    @grid = Array.new(size) do |row|
+      Array.new(size) { |col| Tile.new self, [row, col] }
     end
+    plant_bombs
   end
 
-  def place_bombs(bomb_total)
+  def plant_bombs
     bomb_total.times do
-      row, col = rand(size), rand(size)
-      until self[[row, col]].clear?
-        row, col = rand(size), rand(size)
+      rand_pos = Array.new(2) { rand(size) }
+      until self[rand_pos].clear?
+        rand_pos = Array.new(2) { rand(size) }
       end
 
-      self[[row, col]].place_bomb
+      self[rand_pos].plant_bomb
     end
   end
 
@@ -85,7 +83,7 @@ class Board
   end
 
   def reveal_all
-    tiles.each { |tile| tile.reveal_self }
+    tiles.each(&:reveal_self)
   end
 
   def reveal_unflagged_bombs

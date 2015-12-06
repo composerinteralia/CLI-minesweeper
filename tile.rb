@@ -16,75 +16,69 @@ class Tile
   neighborhood = [-1,0,1].product [-1,0,1]
   OFFSETS = neighborhood.reject { |pos| pos == [0,0] }
 
-  attr_reader :revealed, :flagged
+  attr_reader :revealed, :flagged, :bomb
   alias_method :revealed?, :revealed
   alias_method :flagged?, :flagged
+  alias_method :bomb?, :bomb
 
-  def initialize(pos, board = nil)
-    @type = :clear
+  def initialize(board, pos)
     @pos = pos
     @board = board
-    @revealed = false
-    @flagged = false
-  end
-
-  def bomb?
-    type == :bomb
+    @revealed, @flagged, @bomb, @loser = false, false, false, false
   end
 
   def clear?
-    type == :clear
+    !bomb
   end
 
-  def flag
-    self.flagged = !flagged
+  def toggle_flag
+    self.flagged = !flagged unless revealed?
   end
 
-  def place_bomb
-    self.type = :bomb
+  def plant_bomb
+    self.bomb = true
   end
 
   def reveal
-    return if flagged?
-    raise Explosion, "You lose!" if bomb?
+    return self if flagged?
+    raise Explosion, pos.join(", ") if bomb?
 
     self.revealed = true
-    @neighbors ||= get_neighbors
+    @neighbors = explore_neighborhood
+    @neighboring_bomb_count = count_neighboring_bombs
 
-    if neighbor_bomb_count.zero? || neighbor_bomb_count == neighbor_flagged_count
-      neighbors.each do |neighbor|
-        neighbor.reveal unless neighbor.revealed? || neighbor.flagged?
-      end
+    if zero_neighboring_bombs? || all_neighboring_bombs_flagged?
+      neighbors.each { |tile| tile.reveal unless tile.revealed? }
     end
   end
 
   def reveal_self
     self.revealed = true
     self.flagged = bomb? #for final bomb count of 0
-    @neighbors ||= get_neighbors
+    @neighbors ||= explore_neighborhood
+    @neighboring_bomb_count ||= count_neighboring_bombs
   end
 
   def to_s
-    if bombed?
+    if exploded?
       "\u2055"
     elsif flagged?
       "\u2691".red
     elsif neighboring_bombs?
-      color neighbor_bomb_count
+      color neighboring_bomb_count
     elsif zero_neighboring_bombs?
       " "
     elsif !revealed?
-      "O".white
+      "\u25A0".light_black
     end
   end
 
   private
-  attr_accessor :type
-  attr_reader :board, :pos, :neighbors
-  attr_writer :revealed, :flagged
+  attr_reader :board, :pos, :neighbors, :neighboring_bomb_count
+  attr_writer :revealed, :flagged, :bomb
 
-  def bombed?
-    bomb? && revealed?
+  def all_neighboring_bombs_flagged?
+    neighboring_bomb_count == neighbor_flagged_count
   end
 
   def board_boundary_filter(positions)
@@ -98,12 +92,16 @@ class Tile
     bomb_count.to_s.colorize(color)
   end
 
-  def get_neighbors
+  def exploded?
+    bomb? && revealed?
+  end
+
+  def explore_neighborhood
     valid_positions = board_boundary_filter neighbor_positions
     valid_positions.map { |pos| board[pos] }
   end
 
-  def neighbor_bomb_count
+  def count_neighboring_bombs
     neighbors.count { |neighbor| neighbor.bomb? }
   end
 
@@ -120,10 +118,10 @@ class Tile
   end
 
   def neighboring_bombs?
-    revealed? && neighbor_bomb_count > 0
+    revealed? && neighboring_bomb_count > 0
   end
 
   def zero_neighboring_bombs?
-    revealed? && neighbor_bomb_count.zero?
+    revealed? && neighboring_bomb_count.zero?
   end
 end
