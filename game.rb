@@ -59,7 +59,7 @@ class Game
   end
 
   def get_move
-    puts "Type 'r' (reveal) or 'f' (flag) followed by"\
+    puts "Type 'r' (reveal) or 'f' (flag) followed by "\
          "a row and column (e.g. 'r 0 0')."
     print ">"
 
