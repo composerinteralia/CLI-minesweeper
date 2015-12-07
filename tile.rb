@@ -41,7 +41,7 @@ class Tile
 
   def reveal
     return self if flagged?
-    raise Explosion, pos.join(", ") if bomb?
+    raise Explosion, pos.map(&:to_s36).join(", ") if bomb?
 
     self.revealed = true
     @neighbors = explore_neighborhood
@@ -82,9 +82,7 @@ class Tile
   end
 
   def board_boundary_filter(positions)
-    positions.select do |pos|
-      pos.all? { |coord| coord.between? 0, board.size - 1 }
-    end
+    positions.select { |position| board.in_bounds?(position) }
   end
 
   def color(bomb_count)

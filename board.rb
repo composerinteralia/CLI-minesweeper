@@ -19,6 +19,10 @@ class Board
     grid[row][col]
   end
 
+  def in_bounds?(position)
+    position.all? { |coord| coord.between? 0, size - 1 }
+  end
+
   def losing_render
     reveal_all
     render

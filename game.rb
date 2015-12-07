@@ -4,6 +4,18 @@ require 'colorize'
 require './tile'
 require './board'
 
+class Integer
+  def to_s36
+    to_s 36
+  end
+end
+
+class String
+  def to_i36
+    to_i 36
+  end
+end
+
 class Game
   MOVE_TYPES = [:r, :f]
 
@@ -54,10 +66,6 @@ class Game
     move.flatten.size != 3
   end
 
-  def in_bounds?(position)
-    position.all? { |coord| coord.between? 0, board.size - 1 }
-  end
-
   def get_move
     puts "Type 'r' (reveal) or 'f' (flag) followed by "\
          "a row and column (e.g. 'r 0 0')."
@@ -84,7 +92,7 @@ class Game
     chars = raw_input.each_char.reject { |char| [" ", ",", "-"].include? char }
 
     move_type = chars.shift.downcase.to_sym
-    position = chars.map { |coord| coord.to_i 36 }
+    position = chars.map(&:to_i36)
     [position, move_type]
   end
 
@@ -93,8 +101,8 @@ class Game
       print "Invalid input. "
     elsif !valid_flag? move[1]
       print "Incorrect move type (type 'r' or 'f'). "
-    elsif !in_bounds? position = move[0]
-      position = position.map { |coord| coord.to_s 36 }
+    elsif !board.in_bounds? position = move[0]
+      position = position.map(&:to_s36)
       print "#{position.join(", ")} is not a valid position. "
     else
       return true
