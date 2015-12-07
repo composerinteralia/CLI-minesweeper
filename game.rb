@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
 require 'colorize'
-require './tile'
-require './board'
+require_relative 'tile'
+require_relative 'board'
 
 class Integer
   def to_s36
