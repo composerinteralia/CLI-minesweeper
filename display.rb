@@ -3,9 +3,6 @@ require_relative "cursorable"
 class Display
   include Cursorable
 
-  attr_accessor :cursor_pos
-  attr_reader :board
-
   def initialize(board, cursor_pos = [0, 0])
     @board = board
     @cursor_pos = cursor_pos
@@ -21,6 +18,8 @@ class Display
   end
 
   private
+  attr_accessor :cursor_pos
+  attr_reader :board
 
   def puts_grid
     board.grid.each_with_index do |row, row_i|
