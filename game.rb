@@ -3,22 +3,9 @@
 require 'colorize'
 require_relative 'tile'
 require_relative 'board'
-
-class Integer
-  def to_s36
-    to_s 36
-  end
-end
-
-class String
-  def to_i36
-    to_i 36
-  end
-end
+require_relative 'display'
 
 class Game
-  MOVE_TYPES = [:r, :f]
-
   def self.from_custom_board(size, bomb_total)
     bomb_total ||= 0
     board = Board.new(size, bomb_total)
@@ -28,15 +15,15 @@ class Game
   def initialize(board = nil)
     board ||= Board.new
     @board = board
+    @display = Display.new(board)
   end
 
   def run
     first_turn = true
 
     until over?
-      board.render
-
       position, move_type = get_move
+
       begin
         start_time = Time.now if first_turn
         board.move(position, move_type)
@@ -45,75 +32,45 @@ class Game
       rescue Explosion => losing_pos
         if first_turn
           @board = Board.new(board.size, board.bomb_total)
+          @display = Display.new(board, display.cursor_pos)
           retry
         end
 
-        board.losing_render
-        return puts "#{losing_pos} exploded! You lose!"
+        return lose
       end
     end
 
-    board.winning_render
-
-    play_time = (Time.now - start_time).round
-    puts "Congratulations! You won in #{play_time} seconds!"
+    win(start_time)
   end
 
   private
-  attr_reader :board
-
-  def bad_parse?(move)
-    move.flatten.size != 3
-  end
+  attr_reader :board, :display
 
   def get_move
-    puts "Type 'r' (reveal) or 'f' (flag) followed by "\
-         "a row and column (e.g. 'r 0 0')."
-    print ">"
-
-    move = parse input
-    until valid_move? move
-      print ">"
-      move = parse input
+    move = nil
+    until move
+      display.render
+      move = display.get_input
     end
-
     move
   end
 
-  def input
-    STDIN.gets.chomp
+  def lose
+    board.reveal_all
+    display.render
+    puts "You lose!".red
   end
 
   def over?
     board.won?
   end
 
-  def parse(raw_input)
-    chars = raw_input.each_char.reject { |char| [" ", ",", "-"].include? char }
+  def win(start_time)
+    board.reveal_unflagged_bombs
+    display.render
 
-    move_type = chars.shift.downcase.to_sym
-    position = chars.map(&:to_i36)
-    [position, move_type]
-  end
-
-  def valid_move?(move)
-    if bad_parse? move
-      print "Invalid input. "
-    elsif !valid_flag? move[1]
-      print "Incorrect move type (type 'r' or 'f'). "
-    elsif !board.in_bounds? position = move[0]
-      position = position.map(&:to_s36)
-      print "#{position.join(", ")} is not a valid position. "
-    else
-      return true
-    end
-
-    puts "Try again."
-    false
-  end
-
-  def valid_flag?(flag)
-    MOVE_TYPES.include? flag
+    play_time = (Time.now - start_time).round
+    puts "Congratulations! You won in #{play_time} seconds!".green
   end
 end
 

@@ -14,7 +14,7 @@ class Tile
   }
 
   neighborhood = [-1,0,1].product [-1,0,1]
-  OFFSETS = neighborhood.reject { |pos| pos == [0,0] }
+  OFFSETS = neighborhood.reject { |pos| pos == [0, 0] }
 
   attr_reader :revealed, :flagged, :bomb
   alias_method :revealed?, :revealed
@@ -41,7 +41,7 @@ class Tile
 
   def reveal
     return self if flagged?
-    raise Explosion, pos.map(&:to_s36).join(", ") if bomb?
+    raise Explosion if bomb?
 
     self.revealed = true
     @neighbors = explore_neighborhood
