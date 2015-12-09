@@ -100,11 +100,11 @@ class Tile
   end
 
   def count_neighboring_bombs
-    neighbors.count { |neighbor| neighbor.bomb? }
+    neighbors.count(&:bomb?)
   end
 
   def neighbor_flagged_count
-    neighbors.count { |neighbor| neighbor.flagged? }
+    neighbors.count(&:flagged?)
   end
 
   def neighbor_positions

@@ -45,7 +45,7 @@ class Board
 
   private
   def flagged_bombs
-    tiles.count { |tile| tile.flagged? }
+    tiles.count(&:flagged?)
   end
 
   def generate_grid
@@ -85,5 +85,4 @@ class Board
         "(i.e. #{max_bomb_total} bombs or fewer)."
     end
   end
-
 end
