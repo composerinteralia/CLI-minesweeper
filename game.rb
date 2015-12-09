@@ -6,7 +6,7 @@ require_relative 'board'
 require_relative 'display'
 
 class Game
-  def self.from_custom_board(size, bomb_total)
+  def self.with_custom_board(size, bomb_total)
     bomb_total ||= 0
     board = Board.new(size, bomb_total)
     self.new(board)
@@ -79,7 +79,7 @@ if __FILE__ == $PROGRAM_NAME
     game = Game.new
   else
     board_size, bomb_total = ARGV.shift(2).map(&:to_i)
-    game = Game.from_custom_board(board_size, bomb_total)
+    game = Game.with_custom_board(board_size, bomb_total)
   end
 
   game.run
